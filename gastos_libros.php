@@ -13,7 +13,7 @@ require_once('header.php');
  <table class="table table-striped">
   <thead>
     <tr>
-      <th scope="row">id lbro</th>
+      <th scope="row">Libro</th>
       <th scope="col">Gasto</th>
       <th scope="col">ingreso</th>
       
@@ -24,13 +24,12 @@ require_once('header.php');
    
 
 $sql = "select 
-id_libro,
+ad_movimiento.id_libro,ad_libro.titulo,
 round(sum(CASE WHEN `id_tipo_gasto`='N' THEN COALESCE(`base`,0) END),2) neg,
 round(sum(CASE WHEN `id_tipo_gasto`='P' THEN COALESCE(`base`,0) END),2) pos 
 from 
-ad_movimiento 
-where id_libro is not null
- group by id_libro" ;
+ad_movimiento inner join ad_libro on ad_libro.id_libro=ad_movimiento.id_libro
+ group by ad_movimiento.id_libro" ;
 
 $result = $mysqli->query($sql);
 ;
@@ -39,7 +38,7 @@ $neg=0;
 if ($result->num_rows > 0) {
     
     while($row = $result->fetch_assoc()) {
-        echo '<tr><th scope="row"> ' . $row["id_libro"]. " -  <td>" . $row["neg"]. " <td>".$row["pos"]."<br>";
+        echo '<tr><th scope="row"> ' . $row["titulo"]. "   <td>" . $row["neg"]. " <td>".$row["pos"]."<br>";
         $pos+=$row["pos"];
         $neg+=$row["neg"];
     }
