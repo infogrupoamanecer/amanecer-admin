@@ -1,16 +1,7 @@
 
 <?php
 require_once('header.php'); 
-if (!empty($_POST))
-{
-     $stmt = $mysqli->prepare("insert into ad_blogger(nombre, link,tipo,sexo,followers,mail,direccion) values (?,?,?,?,?,?,?)");
 
-    $stmt->bind_param("sssssss", $_POST['nombre'],$_POST['link'],$_POST['tipo'],$_POST['sexo'],$_POST['followers'],$_POST['mail'],$_POST['direccion']);
-
-   
-if(!$stmt->execute()) echo $stmt->error;
-    $stmt->close();
-}
 ?>
 <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.1.3/css/bootstrap.min.css" integrity="sha384-MCw98/SFnGE8fJT3GXwEOngsV7Zt27NXFoaoApmYm81iuXoPkFOJwJ8ERdknLPMO" crossorigin="anonymous">
 
@@ -36,7 +27,8 @@ $sql = "select
 year(fecha_creacion) ano,
 month(`fecha_creacion`) mes,
 round(sum(CASE WHEN `id_tipo_gasto`='N' THEN COALESCE(`base`,0) END),2) neg,
-round(sum(CASE WHEN `id_tipo_gasto`='P' THEN COALESCE(`base`,0) END),2) pos 
+round(sum(CASE WHEN `id_tipo_gasto`='P' THEN COALESCE(`base`,0) END),2) pos,
+sum(envio) env 
 from 
 ad_movimiento 
 GROUP by year(fecha_creacion), month(`fecha_creacion`) 
@@ -50,10 +42,11 @@ if ($result->num_rows > 0) {
     
     while($row = $result->fetch_assoc()) {
         echo '<tr><th scope="row"> ' . $row["ano"]. " -  " . $row["mes"]. " <td>" . $row["neg"]. " <td>".$row["pos"]."<br>";
-        $pos+=$row["pos"];
+        $pos+=$row["pos"]+$row["env"];
         $neg+=$row["neg"];
     }
 } 
+
 
 
 
